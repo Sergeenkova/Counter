@@ -1,6 +1,6 @@
 type CounterProps = {
-    Value: number
-    className: string
+    Value: number | string
+    className: string 
 }
 
 export const Counter = ({Value, className}: CounterProps ) => {

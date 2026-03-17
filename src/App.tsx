@@ -8,25 +8,39 @@ import { useState } from 'react';
 import { ChangeEvent } from 'react';
 
 export const App = () => {
-  const minValue = 0
-  const maxValue = 5
+  const defaultStartValue = 0
+  const defaultMaxValue = 1
   const deltaValue = 1
 
 
-  const [Value, setValue] = useState<number>(minValue)
-  const [inputStartValue, setInputStartValue] = useState<number>(0)
-  const [inputMaxValue, setInputMaxValue] = useState<number>(0)
+  const [counterStartValue, setCounterStartValue] = useState<number>(defaultStartValue)
+  const [counterMaxValue, setCounterMaxValue] = useState<number>(defaultMaxValue)
+  const [Value, setValue] = useState<number>(counterStartValue)
+  const [inputStartValue, setInputStartValue] = useState<number>(defaultStartValue)
+  const [inputMaxValue, setInputMaxValue] = useState<number>(defaultMaxValue)
+  const isIncorrectValue = inputStartValue < 0 || inputMaxValue <= inputStartValue
+  const isPendingSet = !isIncorrectValue && (inputStartValue !== counterStartValue || inputMaxValue !== counterMaxValue)
+  const isSetDisabled = isIncorrectValue || !isPendingSet
+  const displayValue = isIncorrectValue ? "Incorrect value!" : isPendingSet ? "Enter values and press set" : Value
 
- 
+
 
   const onClickIncHandler = () => {
-    if (Value < maxValue) {
+    if (Value < counterMaxValue) {
       setValue (Value + deltaValue)
     }
   }
 
   const onClickResetHandler = () => {
-    setValue (minValue)
+    setValue (counterStartValue)
+  }
+
+  const onClickSetHandler = () => {
+    if (!isIncorrectValue) {
+      setCounterStartValue(inputStartValue)
+      setCounterMaxValue(inputMaxValue)
+      setValue(inputStartValue)
+    }
   }
 
   const onChangeInputMaxValueHandler = (e: ChangeEvent<HTMLInputElement>) => {
@@ -54,13 +68,13 @@ export const App = () => {
           <Label title = {"start value:"} className = {"label-style"}/>
           <Input inputValue = {inputStartValue} className = {`input-style ${inputStartValue < 0 || inputMaxValue === inputStartValue ? "input-error" : ""}`} onChange = {onChangeInputStartValueHandler}/>
         </div>
-        <Button title = {"set"} className = {"btn-style"} disabled = {inputMaxValue <= inputStartValue || inputStartValue < 0}/>
+        <Button title = {"set"} className = {"btn-style"} onClick = {onClickSetHandler} disabled = {isSetDisabled}/>
       </div>
 
       <div className = {"counter-wrapper"}>
-        <Counter Value = {Value} className = {`value-style ${Value === maxValue ? "max-value-style" : ""}`} />
-        <Button title = {"inc"} onClick = {onClickIncHandler} disabled = {Value === maxValue} className = {"btn-style"}/>
-        <Button title = {"reset"} onClick = {onClickResetHandler} className = {"btn-style"}/>
+        <Counter Value = {displayValue} className = {`value-style ${!isIncorrectValue && !isPendingSet && Value === counterMaxValue ? "max-value-style" : ""} ${isIncorrectValue ? "incorrect-value-style" : ""} ${isPendingSet ? "pending-value-style" : ""}`} />
+        <Button title = {"inc"} onClick = {onClickIncHandler} disabled = {Value === counterMaxValue || isIncorrectValue || isPendingSet} className = {"btn-style"}/>
+        <Button title = {"reset"} onClick = {onClickResetHandler} disabled = {isIncorrectValue || isPendingSet} className = {"btn-style"}/>
       </div>
     </div>
   )
