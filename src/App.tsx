@@ -4,7 +4,7 @@ import { Counter } from './components/Counter';
 import { Button } from './components/Button';
 import { Label } from "./components/Label";
 import { Input } from "./components/Input"
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ChangeEvent } from 'react';
 
 export const App = () => {
@@ -35,11 +35,14 @@ export const App = () => {
     setValue (counterStartValue)
   }
 
+  useEffect(() => {
+    setValue(counterStartValue)
+  }, [counterStartValue])
+
   const onClickSetHandler = () => {
     if (!isIncorrectValue) {
       setCounterStartValue(inputStartValue)
       setCounterMaxValue(inputMaxValue)
-      setValue(inputStartValue)
     }
   }
 
